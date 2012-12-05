@@ -17,6 +17,7 @@ import logging
 
 import imaplib
 import email, email.utils, email.header
+import codecs
 
 class MailWatch(BotPlugin):
 	""""Poll IMAP mailboxes and report new mails to specified chatrooms"""
@@ -66,7 +67,12 @@ class MailWatch(BotPlugin):
 			typ, data = M.fetch(num, '(RFC822.HEADER)')
 			raw_mail = data[0][1]
 			# raw_message is a bytestring which must be decoded to make it usable
-			mail = email.message_from_string(raw_mail.decode("utf-8", "ignore"))
+			raw_mail_decoded = raw_mail.decode("utf-8", "ignore")
+			# we encode it as ascii with the ignore option otherwhise there is a chance that
+			# message_from_string crashes when trying to encode it as ascii because it encodes
+			# with errors = strict
+			raw_mail_ascii = raw_mail_decoded.encode("ascii", "ignore")
+			mail = email.message_from_string(raw_mail_ascii)
 			if mail.get('Message-ID') not in seen:
 				logging.debug("New message: {0}".format(mail.get('Message-ID')))
 				seen.append(mail.get('Message-ID'))

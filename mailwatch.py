@@ -17,7 +17,6 @@ import logging
 
 import imaplib
 import email, email.utils, email.header
-import codecs
 
 class MailWatch(BotPlugin):
 	""""Poll IMAP mailboxes and report new mails to specified chatrooms"""
